@@ -1,4 +1,4 @@
-# Copyright 2017 Brandon Schlueter
+# Copyright 2018 Brandon Schlueter
 # This file is part of boron.
 #
 # Boron is free software: you can redistribute it and/or modify
