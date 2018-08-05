@@ -21,11 +21,16 @@ from setuptools import setup
 
 boron = __import__('boron')
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
     name='boron',
     description=boron.description,
     author_email='b@schlueter.blue',
     url='http://boron.schlueter.blue',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     license='GNU General Public License v3 or later (GPLv3+)',
     packages=['boron'],
     author='Brandon Schlueter',
