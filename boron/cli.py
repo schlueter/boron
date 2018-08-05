@@ -26,9 +26,13 @@ from boron import description, default_config_file, WSGIApp
 
 def parse_args(description, default_config_file):
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('host_or_socket',
+    parser.add_argument('-a', '--host',
                         type=str,
-                        help='A hostname or socket to listen on.')
+                        default='0.0.0.0',
+                        help='A host listen on.')
+    parser.add_argument('-s', '--socket',
+                        type=str,
+                        help='A socket to listen on.')
     parser.add_argument('-p', '--port',
                         type=int,
                         help='A port to listen on.')
@@ -40,17 +44,23 @@ def parse_args(description, default_config_file):
                         help='Specify the path to a configuration file.')
     return parser.parse_args()
 
+
 def main():
     args = parse_args(description, default_config_file)
+
+    if args.port:
+        listen_address = ':'.join([args.host, str(args.port)])
+    else:
+        listen_address = args.socket
+
     try:
-        app = WSGIApp()
-        bjoern.listen(app, args.host_or_socket, args.port, reuse_port=args.reuse_port)
-        listen_address = args.host_or_socket + (':' + str(args.port)) if args.port else ''
-        print('Listening at {listen_address}'.format(listen_address=listen_address) , file=sys.stderr)
+        bjoern.listen(WSGIApp(), args.host or args.socket, args.port, reuse_port=args.reuse_port)
+        print('Listening at {listen_address}'.format(listen_address=listen_address), file=sys.stderr)
         bjoern.run()
     except KeyboardInterrupt:
         print('\rExit requested', file=sys.stderr)
         exit()
+
 
 if __name__ == '__main__':
     main()
