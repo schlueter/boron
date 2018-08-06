@@ -24,42 +24,53 @@ import bjoern
 from boron import description, default_config_file, WSGIApp
 
 
-def parse_args(description, default_config_file):
-    parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('-a', '--host',
-                        type=str,
-                        default='0.0.0.0',
-                        help='A host listen on.')
-    parser.add_argument('-s', '--socket',
-                        type=str,
-                        help='A socket to listen on.')
-    parser.add_argument('-p', '--port',
-                        type=int,
-                        help='A port to listen on.')
-    parser.add_argument('-r', '--reuse-port',
-                        action='store_true',
-                        help='Enables SO_REUSEPORT if available.')
-    parser.add_argument('-c', '--config-file',
-                        type=argparse.FileType('r'),
-                        help='Specify the path to a configuration file.')
-    return parser.parse_args()
+class BoronApp:
+    def parse_args(self, description, default_config_file):
+        self.parser = argparse.ArgumentParser(description=description)
+        self.parser.add_argument(
+            '-a', '--host',
+            type=str,
+            default='0.0.0.0',
+            help='A host listen on.')
+        self.parser.add_argument(
+            '-s', '--socket',
+            type=str,
+            help='A socket to listen on.')
+        self.parser.add_argument(
+            '-p', '--port',
+            type=int,
+            help='A port to listen on.')
+        self.parser.add_argument(
+            '-r', '--reuse-port',
+            action='store_true',
+            help='Enables SO_REUSEPORT if available.')
+        self.parser.add_argument(
+            '-c', '--config-file',
+            type=argparse.FileType('r'),
+            help='Specify the path to a configuration file.')
+        return self.parser.parse_args()
+
+    def main(self):
+        # TODO allow port, socket, and host config from config file
+        args = self.parse_args(description, default_config_file)
+
+        if args.port:
+            listen_address = ':'.join([args.host, str(args.port)])
+        else:
+            listen_address = args.socket
+
+        try:
+            bjoern.listen(WSGIApp(), args.host or args.socket, args.port, reuse_port=args.reuse_port)
+            print('Listening at {listen_address}'.format(listen_address=listen_address), file=sys.stderr)
+            bjoern.run()
+        except KeyboardInterrupt:
+            print('\rExit requested', file=sys.stderr)
+            exit()
 
 
 def main():
-    args = parse_args(description, default_config_file)
-
-    if args.port:
-        listen_address = ':'.join([args.host, str(args.port)])
-    else:
-        listen_address = args.socket
-
-    try:
-        bjoern.listen(WSGIApp(), args.host or args.socket, args.port, reuse_port=args.reuse_port)
-        print('Listening at {listen_address}'.format(listen_address=listen_address), file=sys.stderr)
-        bjoern.run()
-    except KeyboardInterrupt:
-        print('\rExit requested', file=sys.stderr)
-        exit()
+    app = BoronApp()
+    app.main()
 
 
 if __name__ == '__main__':
