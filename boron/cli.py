@@ -54,7 +54,7 @@ class BoronApp:
         parser, args = self.parse_args(description, default_config_file)
 
         # TODO allow port, socket, and host config from config file
-        if not args.socket or args.port:
+        if not (args.socket or args.port):
             parser.print_help()
             exit(2)
 
