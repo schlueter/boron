@@ -17,9 +17,14 @@
 import os
 import sys
 
-from boron.wsgi import WSGIApp
+from .wsgi import WSGIApp
+from .cli import BoronApp
+
 
 assert WSGIApp
+assert BoronApp
+
+version = '1.0.0alpha2'
 
 description = """
     Boron is a framework for simple http applications. I did not intend to write it, but
@@ -27,5 +32,4 @@ description = """
     logic of that application.
     """
 
-version = '2018.08.04-alpha1'
 default_config_file = os.path.join(sys.prefix, 'etc/boron/config.yml')

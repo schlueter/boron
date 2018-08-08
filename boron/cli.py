@@ -21,10 +21,14 @@ import sys
 
 import bjoern
 
-from boron import description, default_config_file, WSGIApp
-
 
 class BoronApp:
+
+    def __init__(self, app, description, default_config_file=''):
+        self.description = description
+        self.default_config_file = default_config_file
+        self.app = app
+
     def parse_args(self, description, default_config_file):
         parser = argparse.ArgumentParser(description=description)
         parser.add_argument(
@@ -44,14 +48,17 @@ class BoronApp:
             '-r', '--reuse-port',
             action='store_true',
             help='Enables SO_REUSEPORT if available.')
-        parser.add_argument(
-            '-c', '--config-file',
-            type=argparse.FileType('r'),
-            help='Specify the path to a configuration file.')
+
+        if default_config_file:
+            parser.add_argument(
+                '-c', '--config-file',
+                type=argparse.FileType('r'),
+                help='Specify the path to a configuration file.')
+
         return (parser, parser.parse_args())
 
     def main(self):
-        parser, args = self.parse_args(description, default_config_file)
+        parser, args = self.parse_args(self.description, self.default_config_file)
 
         # TODO allow port, socket, and host config from config file
         if not (args.socket or args.port):
@@ -62,7 +69,7 @@ class BoronApp:
         listen_address = args.socket if args.socket else ':'.join([args.host, str(args.port)])
 
         try:
-            bjoern.listen(WSGIApp(), args.host or args.socket, args.port, reuse_port=args.reuse_port)
+            bjoern.listen(self.app(), args.host or args.socket, args.port, reuse_port=args.reuse_port)
             print('Listening at {listen_address}'.format(listen_address=listen_address), file=sys.stderr)
             bjoern.run()
         except KeyboardInterrupt:
@@ -71,9 +78,8 @@ class BoronApp:
 
 
 def main():
-    app = BoronApp()
+    import boron
+    from .wsgi import WSGIApp
+
+    app = BoronApp(WSGIApp, boron.description, boron.default_config_file)
     app.main()
-
-
-if __name__ == '__main__':
-    main()

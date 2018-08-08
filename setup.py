@@ -26,15 +26,15 @@ with open("README.md", "r") as fh:
 
 setup(
     name='boron',
-    description=boron.description,
+    author='Brandon Schlueter',
     author_email='b@schlueter.blue',
-    url='http://boron.schlueter.blue',
+    description=boron.description,
     long_description=long_description,
     long_description_content_type="text/markdown",
+    url='http://boron.schlueter.blue',
+    version=boron.version,
     license='GNU General Public License v3 or later (GPLv3+)',
     packages=['boron'],
-    author='Brandon Schlueter',
-    version=boron.version,
     install_requires=[
         'bjoern',
         'pyyaml',
