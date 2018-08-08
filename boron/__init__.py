@@ -24,7 +24,7 @@ from .cli import BoronApp
 assert WSGIApp
 assert BoronApp
 
-version = '1.0.0alpha2'
+version = '1.0.0alpha3'
 
 description = """
     Boron is a framework for simple http applications. I did not intend to write it, but
