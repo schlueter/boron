@@ -55,7 +55,8 @@ class BoronApp:
 
         # TODO allow port, socket, and host config from config file
         if not (args.socket or args.port):
-            parser.print_help()
+            print('Either a socket or port must be specified.\n', file=sys.stderr)
+            parser.print_help(sys.stderr)
             exit(2)
 
         listen_address = args.socket if args.socket else ':'.join([args.host, str(args.port)])
