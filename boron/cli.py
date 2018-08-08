@@ -36,10 +36,11 @@ class BoronApp:
             type=str,
             default='0.0.0.0',
             help='A host listen on.')
-        parser.add_argument(
-            '-s', '--socket',
-            type=str,
-            help='A socket to listen on.')
+        if default_config_file:
+            parser.add_argument(
+                '-c', '--config-file',
+                type=argparse.FileType('r'),
+                help='Specify the path to a configuration file.')
         parser.add_argument(
             '-p', '--port',
             type=int,
@@ -48,12 +49,10 @@ class BoronApp:
             '-r', '--reuse-port',
             action='store_true',
             help='Enables SO_REUSEPORT if available.')
-
-        if default_config_file:
-            parser.add_argument(
-                '-c', '--config-file',
-                type=argparse.FileType('r'),
-                help='Specify the path to a configuration file.')
+        parser.add_argument(
+            '-s', '--socket',
+            type=str,
+            help='A socket to listen on.')
 
         return (parser, parser.parse_args())
 
